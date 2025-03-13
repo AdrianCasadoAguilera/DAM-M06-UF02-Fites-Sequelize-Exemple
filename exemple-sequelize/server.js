@@ -20,6 +20,7 @@ const { logger, expressLogger } = require('./src/config/logger');
 const rutesYoutuber = require('./src/routes/rutesYoutuber');
 const rutesVideo = require('./src/routes/rutesVideo');
 const rutesCategoria = require('./src/routes/rutesCategoria');
+const rutesUsuari = require('./src/routes/rutesUsuari');
 
 // Crear instància d'Express
 const app = express();
@@ -33,7 +34,7 @@ app.use(cors());
 app.use(express.json());
 
 // Configuració de Swagger per la documentació de l'API
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use('/api-documentacio', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 /**
  * Middleware de logging personalitzat
@@ -57,6 +58,7 @@ app.use(expressLogger);
 app.use('/api/youtubers', rutesYoutuber);
 app.use('/api/videos', rutesVideo);
 app.use('/api/categories', rutesCategoria);
+app.use('/api/usuaris', rutesUsuari);
 
 // Gestió centralitzada d'errors (importada del mòdul gestorErrors)
 app.use(gestorErrors);
@@ -94,7 +96,7 @@ async function iniciarServidor() {
             logger.info('Servidor iniciat correctament', {
                 port: PORT,
                 mode: process.env.NODE_ENV,
-                docs: `http://127.0.0.1:${PORT}/api-docs`
+                docs: `http://127.0.0.1:${PORT}/api-documentacio`
             });
             logger.info('Rutes disponibles:', {
                 youtubers: '/api/youtubers',

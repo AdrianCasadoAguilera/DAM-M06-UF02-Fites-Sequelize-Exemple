@@ -10,6 +10,8 @@ const PerfilYoutuber = require('./PerfilYoutuber');
 const Video = require('./Video');
 const Categoria = require('./Categoria');
 const Playlist = require('./Playlist');
+const Usuari = require('./Usuari');
+const Comentari = require('./Comentari');
 
 // Definir el model VideosCategories que servirà com a taula d'unió
 const VideosCategories = sequelize.define('VideosCategories', {
@@ -56,6 +58,30 @@ const VideosPlaylists = sequelize.define('VideosPlaylists', {
   timestamps: false
 })
 
+const LikesVideoUsuari = sequelize.define('LikesVideoUsuari', {
+  video_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: {
+      model: Video,
+      key: 'id'
+    }
+  },
+  usuari_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: {
+      model: Usuari,
+      key: 'id'
+    }
+  },
+  type: {
+    type: DataTypes.ENUM('like', 'dislike'),
+    allowNull: false
+  }
+});
+
+
 // Relació 1:1 entre Youtuber i PerfilYoutuber
 Youtuber.hasOne(PerfilYoutuber, { foreignKey: 'youtuber_id' });
 PerfilYoutuber.belongsTo(Youtuber, { foreignKey: 'youtuber_id' });
@@ -71,11 +97,23 @@ Categoria.belongsToMany(Video, { through: VideosCategories, foreignKey: 'categor
 Video.belongsToMany(Playlist, {through: VideosPlaylists, foreignKey: 'video_id'});
 Playlist.belongsToMany(Video, {through: VideosPlaylists, foreignKey: 'video_id'});
 
+Usuari.hasMany(Comentari, {foreignKey: 'usuari_id'});
+Comentari.belongsTo(Usuari, {foreignKey: 'usuari_id'});
+
+Video.hasMany(Comentari, {foreignKey: 'video_id'});
+Comentari.belongsTo(Video, {foreignKey: 'video_id'});
+
+Usuari.belongsToMany(Video, {through: LikesVideoUsuari, foreignKey: 'usuari_id'});
+Video.belongsToMany(Usuari, {through: LikesVideoUsuari, foreignKey: 'video_id'});
+
 module.exports = {
   Youtuber,
   PerfilYoutuber,
   Video,
   Categoria,
   VideosCategories,
-  VideosPlaylists
+  VideosPlaylists,
+  Usuari,
+  Comentari,
+  LikesVideoUsuari
 };
